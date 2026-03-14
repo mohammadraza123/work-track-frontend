@@ -4,6 +4,8 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { PWARegister } from "./components/PWARegister";
 import "./globals.css";
 import InstallPWA from "./components/InstallPWA";
+import ReduxProvider from "./components/ReduxProvider";
+import InitializeAuth from "./components/InitializeAuth";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -113,7 +115,10 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {children}
+        <ReduxProvider>
+          <InitializeAuth />
+          {children}
+        </ReduxProvider>
         <InstallPWA />
         <PWARegister />
       </body>
