@@ -6,6 +6,7 @@ import "./globals.css";
 import InstallPWA from "./components/InstallPWA";
 import ReduxProvider from "./components/ReduxProvider";
 import InitializeAuth from "./components/InitializeAuth";
+import { Toaster } from "react-hot-toast";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -115,6 +116,13 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        <Toaster
+          position="top-center"
+          reverseOrder={false}
+          toastOptions={{
+            duration: 1500,
+          }}
+        />
         <ReduxProvider>
           <InitializeAuth />
           {children}

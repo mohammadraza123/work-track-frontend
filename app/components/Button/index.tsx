@@ -5,6 +5,7 @@ interface ButtonProps {
   active?: boolean;
   onClick?: () => void;
   className?: string;
+  loader?: boolean;
   type?: "button" | "submit" | "reset";
 }
 
@@ -14,17 +15,26 @@ const Button: React.FC<ButtonProps> = ({
   onClick,
   className = "",
   type = "button",
+  loader = false,
 }) => {
   return (
     <button
       type={type}
       onClick={onClick}
-      className={`flex-1 py-5 text-lg font-semibold transition-all duration-200
-        ${active ? "text-white border-b-4 border-white" : "text-white/50"}
-        ${className}
-      `}
+      disabled={loader}
+      className={`w-full bg-white text-black font-semibold text-xl py-5 rounded-3xl
+  active:scale-[0.97] transition-all duration-200 shadow-lg shadow-black/30
+  disabled:opacity-100 ${className}`}
     >
-      {children}
+      {loader ? (
+        <div className="button-loader py-1.5">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+      ) : (
+        children
+      )}
     </button>
   );
 };

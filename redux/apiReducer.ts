@@ -1,5 +1,5 @@
 import toast from "react-hot-toast";
-import { getUser, logout, signIn, signUp } from "./apiSlice";
+import { getUser, logout, signIn, signUp, verifyOtp } from "./apiSlice";
 import Cookies from "js-cookie";
 
 export const extraReducersBuilder = (builder: any) => {
@@ -28,11 +28,27 @@ export const extraReducersBuilder = (builder: any) => {
     .addCase(signIn.fulfilled, (state: any, action: any) => {
       state.status = "succeeded";
       state.error = null;
-      toast.success(action?.payload?.message);
-      Cookies.set("token", action?.payload?.accessToken, { expires: 7 });
-      localStorage.setItem("refreshToken", action.payload.accessToken);
+      state.user = action?.payload?.data;
+      toast.success(action?.payload?.message?.text);
+      Cookies.set("token", action?.payload?.data.token, { expires: 7 });
+      localStorage.setItem("user", JSON.stringify(action?.payload?.data));
     })
     .addCase(signIn.rejected, (state: any, action: any) => {
+      state.status = "failed";
+      state.error = action?.payload?.meta?.message;
+      toast.error(action?.payload?.message);
+    })
+
+    // Verify Email
+    .addCase(verifyOtp.pending, (state: any, action: any) => {
+      state.status = "loading";
+    })
+    .addCase(verifyOtp.fulfilled, (state: any, action: any) => {
+      state.status = "succeeded";
+      state.error = null;
+      toast.success(action?.payload?.message);
+    })
+    .addCase(verifyOtp.rejected, (state: any, action: any) => {
       state.status = "failed";
       state.error = action?.payload?.meta?.message;
       toast.error(action?.payload?.message);
@@ -45,7 +61,6 @@ export const extraReducersBuilder = (builder: any) => {
     .addCase(getUser.fulfilled, (state: any, action: any) => {
       state.status = "succeeded";
       state.error = null;
-      state.user = action?.payload?.user;
       localStorage.setItem("user", JSON.stringify(action?.payload?.user));
     })
     .addCase(getUser.rejected, (state: any, action: any) => {

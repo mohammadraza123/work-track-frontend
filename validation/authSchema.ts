@@ -20,6 +20,13 @@ export const signupSchema = yup.object({
     .required("Password is required"),
 });
 
+export const OtpSchema = yup.object({
+  otp: yup
+    .string()
+    .required("OTP is required")
+    .matches(/^[0-9]{6}$/, "OTP must be 6 digits"),
+});
+
 export const forgotPasswordSchema = yup.object({
   email: yup
     .string()

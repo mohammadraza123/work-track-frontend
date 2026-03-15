@@ -17,13 +17,23 @@ const AuthPage = () => {
 
         {/* Tabs */}
         <div className="flex px-8 border-b border-white/10">
-          <Button active={mode === "login"} onClick={() => setMode("login")}>
+          <button
+            className={`flex-1 py-5 text-lg font-semibold transition-all duration-200
+        ${mode === "login" ? "text-white border-b-4 border-white" : "text-white/50"}
+      `}
+            onClick={() => setMode("login")}
+          >
             Log In
-          </Button>
+          </button>
 
-          <Button active={mode === "signup"} onClick={() => setMode("signup")}>
+          <button
+            className={`flex-1 py-5 text-lg font-semibold transition-all duration-200
+        ${mode === "signup" ? "text-white border-b-4 border-white" : "text-white/50"}
+      `}
+            onClick={() => setMode("signup")}
+          >
             Sign Up
-          </Button>
+          </button>
         </div>
 
         <div className="px-8 pt-8 pb-10">

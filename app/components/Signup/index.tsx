@@ -8,6 +8,8 @@ import Input from "../Input";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/redux/rootReducer";
 import { signUp } from "@/redux/apiSlice";
+import Button from "../Button";
+import { useRouter } from "next/navigation";
 
 interface SignupFormValues {
   name: string;
@@ -16,12 +18,13 @@ interface SignupFormValues {
 }
 
 const SignupForm: React.FC = () => {
+  const router = useRouter();
   const dispatch = useDispatch<AppDispatch>();
 
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isSubmitting },
     reset,
   } = useForm<SignupFormValues>({
     resolver: yupResolver(signupSchema),
@@ -35,16 +38,11 @@ const SignupForm: React.FC = () => {
         password: data.password,
       };
 
-      // Redux async thunk call
       const response = await dispatch(signUp(payload)).unwrap();
-
-      console.log("Signup success:", response);
-
-      // Reset form after successful submit
+      router.push(`/verify-otp?type=signup&email=${data?.email}`);
       reset();
     } catch (err: any) {
       console.error("Signup failed:", err);
-      // You can also show toast notification here
     }
   };
 
@@ -75,12 +73,9 @@ const SignupForm: React.FC = () => {
         errorMessage={errors.password?.message}
       />
 
-      <button
-        type="submit"
-        className="w-full bg-white text-[#292c43] font-semibold text-xl py-5 rounded-3xl active:scale-[0.97] transition-all duration-200 shadow-lg shadow-black/30"
-      >
+      <Button type="submit" loader={isSubmitting}>
         Create Account
-      </button>
+      </Button>
     </form>
   );
 };
