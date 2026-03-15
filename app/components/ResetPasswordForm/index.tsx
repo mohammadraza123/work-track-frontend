@@ -37,7 +37,7 @@ export default function ResetPasswordForm() {
       const payload = { email, otp, password: data?.password };
       const response = await dispatch(resetPassword(payload)).unwrap();
       router.push("/work-track");
-      toast.success(response?.message?.text);
+      toast.success(response?.message);
     } catch (err) {
       console.error("OTP verification failed:", err);
     }
