@@ -60,7 +60,11 @@ export default function OTPForm() {
       const payload = { email, type, otp: data.otp };
       const response = await dispatch(verifyOtp(payload)).unwrap();
       console.log("OTP success:", response);
-      router.push("/work-track");
+      if (type === "forgot") {
+        router.push(`/reset-password?email=${email}&otp=${data?.otp}`);
+      } else {
+        router.push("/work-track");
+      }
     } catch (err) {
       console.error("OTP verification failed:", err);
     }

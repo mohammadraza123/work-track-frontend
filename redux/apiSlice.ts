@@ -89,6 +89,30 @@ export const verifyOtp = createAsyncThunk(
   },
 );
 
+export const forgotPassword = createAsyncThunk(
+  "/forgot/password",
+  async (bodyData: any, { rejectWithValue }) => {
+    try {
+      const response = await axios.post(`auth/forgot`, bodyData);
+      return response.data;
+    } catch (error: any) {
+      return rejectWithValue(error.response.data);
+    }
+  },
+);
+
+export const resetPassword = createAsyncThunk(
+  "/reset/password",
+  async (bodyData: any, { rejectWithValue }) => {
+    try {
+      const response = await axios.post(`auth/resetpassword`, bodyData);
+      return response.data;
+    } catch (error: any) {
+      return rejectWithValue(error.response.data);
+    }
+  },
+);
+
 export const getUser = createAsyncThunk(
   "/get/user",
   async (bodyData: any, { rejectWithValue }) => {

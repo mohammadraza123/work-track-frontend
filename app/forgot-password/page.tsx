@@ -4,18 +4,38 @@ import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { forgotPasswordSchema } from "@/validation/authSchema";
 import Input from "../components/Input";
+import { useRouter } from "next/navigation";
+import { useDispatch } from "react-redux";
+import { AppDispatch } from "@/redux/rootReducer";
+import { forgotPassword } from "@/redux/apiSlice";
+import Button from "../components/Button";
+import toast from "react-hot-toast";
 
 const ForgotPasswordPage = () => {
+  const router = useRouter();
+  const dispatch = useDispatch<AppDispatch>();
+
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isSubmitting },
+    reset,
   } = useForm({
     resolver: yupResolver(forgotPasswordSchema),
   });
 
-  const onSubmit = (data: any) => {
-    console.log("Send reset email:", data);
+  const onSubmit = async (data: any) => {
+    try {
+      const payload = {
+        email: data.email,
+      };
+      const response = await dispatch(forgotPassword(payload)).unwrap();
+      router.push(`/verify-otp?type=forgot&email=${data?.email}`);
+      reset();
+    } catch (err: any) {
+      console.error("Signup failed:", err);
+      toast.error(err?.message);
+    }
   };
 
   return (
@@ -38,12 +58,9 @@ const ForgotPasswordPage = () => {
               errorMessage={errors.email?.message}
             />
 
-            <button
-              type="submit"
-              className="w-full bg-white text-[#292c43] font-semibold text-xl py-5 rounded-3xl active:scale-[0.97] transition-all duration-200 shadow-lg shadow-black/30"
-            >
-              Send Reset Link
-            </button>
+            <Button loader={isSubmitting} type="submit">
+              Send Otp
+            </Button>
           </form>
         </div>
       </div>
