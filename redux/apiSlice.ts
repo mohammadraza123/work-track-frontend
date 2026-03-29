@@ -137,11 +137,11 @@ export const logout = createAsyncThunk(
   },
 );
 
-export const refreshToken = createAsyncThunk(
-  "/auth/refreshToken",
+export const checkIn = createAsyncThunk(
+  "/checkIn",
   async (bodyData: any, { rejectWithValue }) => {
     try {
-      const response = await axios.post(`auth/refresh`);
+      const response = await axios.post(`action/check-in`, bodyData);
       return response.data;
     } catch (error: any) {
       return rejectWithValue(error.response.data);
@@ -149,11 +149,23 @@ export const refreshToken = createAsyncThunk(
   },
 );
 
-export const newsLetter = createAsyncThunk(
-  "/newsletter",
+export const checkOut = createAsyncThunk(
+  "/checkOut",
   async (bodyData: any, { rejectWithValue }) => {
     try {
-      const response = await axios.post(`newsletter`, bodyData);
+      const response = await axios.post(`action/check-out`, bodyData);
+      return response.data;
+    } catch (error: any) {
+      return rejectWithValue(error.response.data);
+    }
+  },
+);
+
+export const getAttendence = createAsyncThunk(
+  "/checkOut",
+  async (bodyData: any, { rejectWithValue }) => {
+    try {
+      const response = await axios.get(`action/get-attendance`, bodyData);
       return response.data;
     } catch (error: any) {
       return rejectWithValue(error.response.data);
