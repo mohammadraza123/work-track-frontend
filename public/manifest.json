@@ -10,6 +10,7 @@
   "lang": "en",
   "scope": "/",
   "prefer_related_applications": false,
+  
   "screenshots": [
     {
       "src": "/icons/logo.png",
@@ -53,6 +54,8 @@
     }
   ],
   "categories": ["productivity", "business"],
+ "permissions": ["geolocation"],
+
   "icons": [
     {
       "src": "/icons/logo.png",
