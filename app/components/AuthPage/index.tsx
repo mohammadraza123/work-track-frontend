@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import Button from "../Button";
 import LoginForm from "../Login";
 import SignupForm from "../Signup";
 import { LocationPermissionModal } from "../LocationPermissionModal";

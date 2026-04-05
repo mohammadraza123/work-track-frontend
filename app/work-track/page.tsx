@@ -5,6 +5,7 @@ import { AppDispatch } from "@/redux/rootReducer";
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
+import { useLocationTracking } from "../hooks/useLocationTracking";
 
 function useClock() {
   const [time, setTime] = useState(new Date());
@@ -15,9 +16,24 @@ function useClock() {
   return time;
 }
 
+
+
 export default function WorkTrack() {
   const dispatch = useDispatch<AppDispatch>();
   const time = useClock();
+
+//for location tracking
+const { startTracking, stopTracking } = useLocationTracking({
+  intervalMinutes: 5,
+  onLocationUpdate: (entry) => {
+    // Just console log for now — replace with API call later
+    console.log("📍 Employee location:", {
+      lat: entry.lat,
+      lng: entry.lng,
+      time: entry.timestamp.toLocaleTimeString(),
+    });
+  },
+});
 
   const [checkedIn, setCheckedIn] = useState(false);
   const [checkInTime, setCheckInTime] = useState<string | null>(null);
@@ -131,6 +147,7 @@ export default function WorkTrack() {
           .padStart(2, "0")}:${d.getSeconds().toString().padStart(2, "0")}`,
       );
       setTodayData(res);
+      startTracking(); // Start location tracking on check-in
     } catch (err) {
       console.log(err);
     }
@@ -144,10 +161,43 @@ export default function WorkTrack() {
       setElapsed("00:00:00");
       setIsCompleted(true);
       setTodayData(res); // store latest checkOut
+      stopTracking();
     } catch (err) {
       console.log(err);
     }
   };
+
+  useEffect(() => {
+    const fetchToday = async () => {
+      try {
+        const data = await dispatch(getAttendence(""))?.unwrap();
+        setTodayData(data);
+
+        if (data?.checkIn) {
+          const d = new Date(data.checkIn);
+          setCheckInTime(
+            `${d.getHours().toString().padStart(2, "0")}:${d
+              .getMinutes()
+              .toString()
+              .padStart(2, "0")}:${d.getSeconds().toString().padStart(2, "0")}`,
+          );
+          setCheckedIn(!data.checkOut);
+
+          if (!data.checkOut) {
+            startTracking(); // 👈 resume tracking if already checked in
+          }
+        }
+
+        if (data?.checkOut) setIsCompleted(true);
+      } catch (err) {
+        console.log(err);
+      } finally {
+        setLoadData(false);
+      }
+    };
+
+    fetchToday();
+  }, [dispatch]);
 
   return (
     <div className="min-h-screen bg-[#1e2035] flex flex-col">
