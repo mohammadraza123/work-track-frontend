@@ -31,17 +31,17 @@ export const metadata: Metadata = {
   icons: {
     icon: [
       {
-        url: "/icons/worktrack-192.svg",
+        url: "/icons/logo.",
         sizes: "192x192",
         type: "image/svg+xml",
       },
       {
-        url: "/icons/worktrack-512.svg",
+        url: "/icons/logo.png",
         sizes: "512x512",
-        type: "image/svg+xml",
+        type: "image/png",
       },
     ],
-    apple: [{ url: "/icons/worktrack-192.svg" }],
+    apple: [{ url: "/icons/logo.png" }],
   },
   keywords: [
     "work tracking",
@@ -72,8 +72,8 @@ export default function RootLayout({
       <head>
         {/* PWA Configuration */}
         <link rel="manifest" href="/manifest.json" />
-        <link rel="icon" type="image/svg+xml" href="/icons/worktrack-192.svg" />
-        <link rel="apple-touch-icon" href="/icons/worktrack-192.svg" />
+        <link rel="icon" type="image/svg+xml" href="/icons/logo.png" />
+        <link rel="apple-touch-icon" href="/icons/logo.png" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta
           name="apple-mobile-web-app-status-bar-style"
@@ -102,7 +102,7 @@ export default function RootLayout({
           property="og:description"
           content="Work-Track helps clients manage projects, track work progress, and stay organized anywhere. Fully works offline."
         />
-        <meta property="og:image" content="/icons/worktrack-512.svg" />
+        <meta property="og:image" content="/icons/logo.png" />
 
         {/* Preconnect to improve performance */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />

@@ -2,8 +2,8 @@ const CACHE_NAME = 'work-track-v1';
 const URLS_TO_CACHE = [
   '/',
   '/manifest.json',
-  '/icons/worktrack-192.svg',
-  '/icons/worktrack-512.svg',
+  '/icons/logo.png',
+  '/icons/logo.png',
 ];
 
 // Install event

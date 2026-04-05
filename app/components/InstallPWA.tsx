@@ -64,7 +64,7 @@ export default function InstallPWA() {
         {/* Left side */}
         <div className="flex items-center gap-3 py-3">
           <Image
-            src="/icons/worktrack-72.svg"
+            src="/icons/logo.png"
             alt="App Icon"
             width={34}
             height={34}
