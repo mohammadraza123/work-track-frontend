@@ -1,6 +1,11 @@
 "use client";
 
-import { checkIn, checkOut, getAttendence } from "@/redux/apiSlice";
+import {
+  checkIn,
+  checkOut,
+  getAttendence,
+  addLocation,
+} from "@/redux/apiSlice";
 import { AppDispatch } from "@/redux/rootReducer";
 import Link from "next/link";
 import { useState, useEffect } from "react";
@@ -16,24 +21,29 @@ function useClock() {
   return time;
 }
 
-
-
 export default function WorkTrack() {
   const dispatch = useDispatch<AppDispatch>();
   const time = useClock();
 
-//for location tracking
-const { startTracking, stopTracking } = useLocationTracking({
-  intervalMinutes: 5,
-  onLocationUpdate: (entry) => {
-    // Just console log for now — replace with API call later
-    console.log("📍 Employee location:", {
-      lat: entry.lat,
-      lng: entry.lng,
-      time: entry.timestamp.toLocaleTimeString(),
-    });
-  },
-});
+  //for location tracking
+  const { startTracking, stopTracking } = useLocationTracking({
+    intervalMinutes: 5,
+    onLocationUpdate: (entry) => {
+      // Console log with location name
+      console.log("📍 Employee location:", {
+        name: entry.locationName || "Fetching...",
+        lat: entry.lat,
+        lng: entry.lng,
+        time: entry.timestamp.toLocaleTimeString(),
+      });
+
+      const payload = {
+        locationName: entry.locationName,
+      };
+
+      dispatch(addLocation(payload));
+    },
+  });
 
   const [checkedIn, setCheckedIn] = useState(false);
   const [checkInTime, setCheckInTime] = useState<string | null>(null);

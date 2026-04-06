@@ -177,7 +177,7 @@ export const addLocation = createAsyncThunk(
   "/add-location",
   async (bodyData: any, { rejectWithValue }) => {
     try {
-      const response = await axios.post(`add-location`, bodyData);
+      const response = await axios.post(`action/add-location`, bodyData);
       return response.data;
     } catch (error: any) {
       return rejectWithValue(error.response.data);
