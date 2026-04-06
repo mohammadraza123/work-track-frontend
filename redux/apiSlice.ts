@@ -173,6 +173,18 @@ export const getAttendence = createAsyncThunk(
   },
 );
 
+export const addLocation = createAsyncThunk(
+  "/add-location",
+  async (bodyData: any, { rejectWithValue }) => {
+    try {
+      const response = await axios.post(`add-location`, bodyData);
+      return response.data;
+    } catch (error: any) {
+      return rejectWithValue(error.response.data);
+    }
+  },
+);
+
 const apiSlice = createSlice({
   name: "api",
   initialState: { ...initialState },
