@@ -19,7 +19,7 @@ export const extraReducersBuilder = (builder: any) => {
       state.status = "failed";
       state.error = action?.payload?.meta?.message;
       toast.error(action?.payload?.meta?.message);
-    })
+    }) 
 
     // Sign In
     .addCase(signIn.pending, (state: any, action: any) => {
