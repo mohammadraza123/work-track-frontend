@@ -25,23 +25,10 @@ export default function WorkTrack() {
   const dispatch = useDispatch<AppDispatch>();
   const time = useClock();
 
-  //for location tracking
   const { startTracking, stopTracking } = useLocationTracking({
     intervalMinutes: 5,
     onLocationUpdate: (entry) => {
-      // Console log with location name
-      console.log("📍 Employee location:", {
-        name: entry.locationName || "Fetching...",
-        lat: entry.lat,
-        lng: entry.lng,
-        time: entry.timestamp.toLocaleTimeString(),
-      });
-
-      const payload = {
-        locationName: entry.locationName,
-      };
-
-      dispatch(addLocation(payload));
+      dispatch(addLocation({ locationName: entry.locationName }));
     },
   });
 
@@ -50,7 +37,12 @@ export default function WorkTrack() {
   const [elapsed, setElapsed] = useState("00:00:00");
   const [todayData, setTodayData] = useState<any>(null);
   const [isCompleted, setIsCompleted] = useState(false);
-  const [loadData, setLoadData] = useState(true);
+
+  const [isSyncing, setIsSyncing] = useState(false);
+  const [initialized, setInitialized] = useState(false);
+
+  // New: Full screen loading state for reload
+  const [isInitialLoading, setIsInitialLoading] = useState(true);
 
   const hours = time.getHours().toString().padStart(2, "0");
   const minutes = time.getMinutes().toString().padStart(2, "0");
@@ -62,40 +54,78 @@ export default function WorkTrack() {
     day: "numeric",
   });
 
-  // ✅ Fetch today's attendance on mount
+  // ✅ 1. LOAD FROM LOCAL STORAGE (instant UI)
+  useEffect(() => {
+    const saved = localStorage.getItem("attendance");
+    if (saved) {
+      const data = JSON.parse(saved);
+      setTodayData(data);
+
+      if (data?.checkIn) {
+        const d = new Date(data.checkIn);
+        const timeStr = `${d.getHours().toString().padStart(2, "0")}:${d
+          .getMinutes()
+          .toString()
+          .padStart(2, "0")}:${d.getSeconds().toString().padStart(2, "0")}`;
+
+        setCheckInTime(timeStr);
+        setCheckedIn(!data.checkOut);
+        setIsCompleted(!!data.checkOut);
+      }
+    }
+
+    setInitialized(true);
+    // Hide spinner after a short delay for smooth feel
+    setTimeout(() => setIsInitialLoading(false), 800);
+  }, []);
+
+  // ✅ 2. FETCH API (silent sync)
   useEffect(() => {
     const fetchToday = async () => {
       try {
-        const data = await dispatch(getAttendence(""))?.unwrap();
-        setTodayData(data);
+        setIsSyncing(true);
 
-        // Check if user is checked in
+        const data = await dispatch(getAttendence(""))?.unwrap();
+
+        setTodayData((prev: any) => {
+          if (JSON.stringify(prev) !== JSON.stringify(data)) {
+            return data;
+          }
+          return prev;
+        });
+
         if (data?.checkIn) {
           const d = new Date(data.checkIn);
-          setCheckInTime(
-            `${d.getHours().toString().padStart(2, "0")}:${d
-              .getMinutes()
-              .toString()
-              .padStart(2, "0")}:${d.getSeconds().toString().padStart(2, "0")}`,
-          );
+          const timeStr = `${d.getHours().toString().padStart(2, "0")}:${d
+            .getMinutes()
+            .toString()
+            .padStart(2, "0")}:${d.getSeconds().toString().padStart(2, "0")}`;
+
+          setCheckInTime(timeStr);
           setCheckedIn(!data.checkOut);
+
+          if (!data.checkOut) startTracking();
         }
 
-        // Disable button if checked out
-        if (data?.checkOut) {
-          setIsCompleted(true);
-        }
+        if (data?.checkOut) setIsCompleted(true);
       } catch (err) {
         console.log(err);
       } finally {
-        setLoadData(false);
+        setIsSyncing(false);
       }
     };
 
     fetchToday();
   }, [dispatch]);
 
-  // ✅ Elapsed timer
+  // ✅ SAVE TO LOCAL STORAGE
+  useEffect(() => {
+    if (todayData) {
+      localStorage.setItem("attendance", JSON.stringify(todayData));
+    }
+  }, [todayData]);
+
+  // ✅ ELAPSED TIMER
   useEffect(() => {
     if (!checkedIn || !checkInTime) return;
 
@@ -105,6 +135,7 @@ export default function WorkTrack() {
       start.setHours(h, m, s, 0);
 
       const diff = Math.floor((Date.now() - start.getTime()) / 1000);
+
       const eh = Math.floor(diff / 3600)
         .toString()
         .padStart(2, "0");
@@ -119,12 +150,12 @@ export default function WorkTrack() {
     return () => clearInterval(interval);
   }, [checkedIn, checkInTime]);
 
+  // ✅ MIDNIGHT RESET
   useEffect(() => {
     const now = new Date();
     const tomorrow = new Date(now);
     tomorrow.setDate(now.getDate() + 1);
-    tomorrow.setHours(0, 0, 0, 0); // next midnight
-    const msUntilMidnight = tomorrow.getTime() - now.getTime();
+    tomorrow.setHours(0, 0, 0, 0);
 
     const timeout = setTimeout(() => {
       setCheckedIn(false);
@@ -132,86 +163,58 @@ export default function WorkTrack() {
       setElapsed("00:00:00");
       setIsCompleted(false);
       setTodayData(null);
-    }, msUntilMidnight);
+      localStorage.removeItem("attendance");
+    }, tomorrow.getTime() - now.getTime());
 
     return () => clearTimeout(timeout);
   }, [todayData]);
 
-  // ✅ Format time
   const formatTime = (date: string) => {
     if (!date) return "--:--";
     const d = new Date(date);
     return d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
   };
 
-  // ✅ Check-In
   const handleCheckIn = async () => {
     try {
       const res = await dispatch(checkIn("")).unwrap();
       setCheckedIn(true);
+
       const d = new Date(res.checkIn);
-      setCheckInTime(
-        `${d.getHours().toString().padStart(2, "0")}:${d
-          .getMinutes()
-          .toString()
-          .padStart(2, "0")}:${d.getSeconds().toString().padStart(2, "0")}`,
-      );
+      const timeStr = `${d.getHours().toString().padStart(2, "0")}:${d
+        .getMinutes()
+        .toString()
+        .padStart(2, "0")}:${d.getSeconds().toString().padStart(2, "0")}`;
+
+      setCheckInTime(timeStr);
       setTodayData(res);
-      startTracking(); // Start location tracking on check-in
+      startTracking();
     } catch (err) {
       console.log(err);
     }
   };
 
-  // ✅ Check-Out
   const handleCheckOut = async () => {
     try {
       const res = await dispatch(checkOut("")).unwrap();
       setCheckedIn(false);
       setElapsed("00:00:00");
       setIsCompleted(true);
-      setTodayData(res); // store latest checkOut
+      setTodayData(res?.data);
       stopTracking();
     } catch (err) {
       console.log(err);
     }
   };
 
-  useEffect(() => {
-    const fetchToday = async () => {
-      try {
-        const data = await dispatch(getAttendence(""))?.unwrap();
-        setTodayData(data);
-
-        if (data?.checkIn) {
-          const d = new Date(data.checkIn);
-          setCheckInTime(
-            `${d.getHours().toString().padStart(2, "0")}:${d
-              .getMinutes()
-              .toString()
-              .padStart(2, "0")}:${d.getSeconds().toString().padStart(2, "0")}`,
-          );
-          setCheckedIn(!data.checkOut);
-
-          if (!data.checkOut) {
-            startTracking(); // 👈 resume tracking if already checked in
-          }
-        }
-
-        if (data?.checkOut) setIsCompleted(true);
-      } catch (err) {
-        console.log(err);
-      } finally {
-        setLoadData(false);
-      }
-    };
-
-    fetchToday();
-  }, [dispatch]);
+  const buttonText = isCompleted
+    ? "Completed Today"
+    : checkedIn
+      ? "Check Out"
+      : "Check In";
 
   return (
-    <div className="min-h-screen bg-[#1e2035] flex flex-col">
-      {/* Grid BG */}
+    <div className="min-h-screen bg-[#1e2035] flex flex-col relative">
       <div
         className="fixed inset-0 pointer-events-none z-0"
         style={{
@@ -221,31 +224,28 @@ export default function WorkTrack() {
         }}
       />
 
-      <div className="relative z-10 flex-1 flex flex-col max-w-sm mx-auto w-full px-5 pt-12 pb-8 gap-5">
-        {/* HEADER */}
-        <div className="flex items-center justify-between">
-          <div>
-            <p className="text-white/40 text-xs uppercase tracking-widest">
-              Good{" "}
-              {time.getHours() < 12
-                ? "Morning"
-                : time.getHours() < 17
-                  ? "Afternoon"
-                  : "Evening"}
+      {/* Beautiful Full-Screen Spinner on Reload */}
+      {isInitialLoading && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#1e2035]/95 backdrop-blur-xl">
+          <div className="flex flex-col items-center">
+            <div className="w-16 h-16 border-4 border-white/20 border-t-white rounded-full animate-spin mb-6"></div>
+            <p className="text-white/60 text-sm mt-2">
+              Loading your attendance...
             </p>
-            <h1 className="text-white text-xl font-bold">WorkTrack</h1>
           </div>
         </div>
+      )}
 
+      <div className="relative z-10 flex-1 flex flex-col max-w-sm mx-auto w-full px-5 pt-12 pb-8 gap-5">
         {/* CLOCK */}
         <div className="bg-[#292c43] rounded-3xl p-7 text-center">
           <p className="text-white/30 text-xs mb-3">{dateStr}</p>
 
           <div className="flex items-end justify-center text-white font-mono">
-            <span className="text-6xl tracking-wider">
+            <span className="text-6xl">
               {hours}:{minutes}
             </span>
-            <span className="text-2xl text-white/40 mb-1 ml-1">:{seconds}</span>
+            <span className="text-2xl text-white/40 ml-1">:{seconds}</span>
           </div>
 
           <div className="mt-4">
@@ -259,16 +259,9 @@ export default function WorkTrack() {
           </div>
         </div>
 
-        {/* ELAPSED */}
-        {checkedIn && (
-          <div className="bg-[#292c43] p-4 rounded-xl text-white">
-            Time: {elapsed}
-          </div>
-        )}
-
         {/* BUTTON */}
         <button
-          disabled={isCompleted || loadData}
+          disabled={!initialized || isCompleted}
           onClick={checkedIn ? handleCheckOut : handleCheckIn}
           className={`w-full py-4 rounded-xl ${
             isCompleted
@@ -278,21 +271,8 @@ export default function WorkTrack() {
                 : "bg-white text-black"
           }`}
         >
-          {isCompleted
-            ? "Completed Today"
-            : checkedIn
-              ? "Check Out"
-              : "Check In"}
+          {buttonText}
         </button>
-
-        {/* QUICK ACCESS */}
-        <div className="flex items-center gap-3">
-          <div className="flex-1 h-px bg-white/8" />
-          <span className="text-white/20 text-xs uppercase tracking-widest">
-            Quick Access
-          </span>
-          <div className="flex-1 h-px bg-white/8" />
-        </div>
 
         <div className="grid grid-cols-2 gap-3">
           <Link
@@ -339,26 +319,25 @@ export default function WorkTrack() {
 
         {/* SUMMARY */}
         <div className="bg-[#292c43] p-4 rounded-xl text-center text-white">
-          <p className="text-white/40 text-xs uppercase tracking-widest mb-3">
-            Today's Summary
-          </p>
+          <p className="text-white/40 text-xs mb-3">Today's Summary</p>
+
           <div className="flex justify-between text-sm">
             <div>
-              <p>{formatTime(todayData?.checkIn)}</p>
+              <p>{todayData ? formatTime(todayData.checkIn) : "--:--"}</p>
               <span className="text-xs text-white/40">Check In</span>
             </div>
 
             <div>
-              <p>{formatTime(todayData?.checkOut)}</p>
+              <p>{todayData ? formatTime(todayData.checkOut) : "--:--"}</p>
               <span className="text-xs text-white/40">Check Out</span>
             </div>
 
-            <div>
+            {/* <div>
               <p>
                 {todayData?.totalHours ? `${todayData.totalHours}h` : "0:00"}
               </p>
               <span className="text-xs text-white/40">Hours</span>
-            </div>
+            </div> */}
           </div>
         </div>
       </div>
