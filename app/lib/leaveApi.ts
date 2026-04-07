@@ -25,7 +25,6 @@ export const getAllLeaves = async () => {
   return res.data;
 };
 
-export const getLeaveById = async (id: string) => {
-  const res = await api.get(`leave/${id}`);
-  return res.data;
+export const getLeaveById = async ({ id }: { id: string }) => {
+  return axios.get(`leave/${id}`);
 };

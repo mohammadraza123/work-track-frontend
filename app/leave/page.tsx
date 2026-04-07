@@ -2,10 +2,11 @@
 
 import { useState, useEffect } from "react";
 import { Leave } from "../types/leave";
-import { getAllLeaves } from "../lib/leaveApi";
+import { getAllLeaves, getLeaveById } from "../lib/leaveApi";
 import RequestForm from "../components/leave/RequestForm";
 import LeaveCard from "../components/leave/LeaveCard";
 import LeaveDetailDrawer from "../components/leave/LeaveDetailDrawer";
+import { useSelector } from "react-redux";
 
 
 export default function LeavePage() {
@@ -14,11 +15,14 @@ export default function LeavePage() {
   const [loading, setLoading] = useState(false);
   const [selected, setSelected] = useState<Leave | null>(null);
   const [successMsg, setSuccessMsg] = useState("");
+const user = useSelector((state: any) => state.api.user);
+
+console.log("user: ", user)
 
   const fetchLeaves = async () => {
     setLoading(true);
     try {
-      const res = await getAllLeaves();
+      const res = await getLeaveById({id:user?._id});
       setLeaves(res.data || []);
     } catch {
       // silent
@@ -28,8 +32,11 @@ export default function LeavePage() {
   };
 
   useEffect(() => {
+    if(user?._id){
     fetchLeaves();
-  }, []);
+
+    }
+  }, [user]);
 
   const handleSuccess = () => {
     setSuccessMsg("Leave request submitted successfully!");
