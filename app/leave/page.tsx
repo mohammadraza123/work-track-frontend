@@ -23,7 +23,8 @@ console.log("user: ", user)
     setLoading(true);
     try {
       const res = await getLeaveById({id:user?._id});
-      setLeaves(res.data || []);
+      setLeaves(res.data?.data || []);
+      console.log("leave by id res: ", res)
     } catch {
       // silent
     } finally {
