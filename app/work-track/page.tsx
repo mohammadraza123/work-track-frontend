@@ -37,6 +37,7 @@ export default function WorkTrack() {
   const [elapsed, setElapsed] = useState("00:00:00");
   const [todayData, setTodayData] = useState<any>(null);
   const [isCompleted, setIsCompleted] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
 
   const [isSyncing, setIsSyncing] = useState(false);
   const [initialized, setInitialized] = useState(false);
@@ -176,7 +177,9 @@ export default function WorkTrack() {
   };
 
   const handleCheckIn = async () => {
+    if (isProcessing) return;
     try {
+      setIsProcessing(true);
       const res = await dispatch(checkIn("")).unwrap();
       setCheckedIn(true);
 
@@ -191,6 +194,8 @@ export default function WorkTrack() {
       startTracking();
     } catch (err) {
       console.log(err);
+    } finally {
+      setIsProcessing(false);
     }
   };
 
@@ -261,7 +266,7 @@ export default function WorkTrack() {
 
         {/* BUTTON */}
         <button
-          disabled={!initialized || isCompleted}
+          disabled={!initialized || isCompleted || isProcessing}
           onClick={checkedIn ? handleCheckOut : handleCheckIn}
           className={`w-full py-4 rounded-xl ${
             isCompleted
@@ -269,9 +274,9 @@ export default function WorkTrack() {
               : checkedIn
                 ? "bg-red-400 text-white"
                 : "bg-white text-black"
-          }`}
+          } ${isProcessing ? "opacity-70 cursor-not-allowed" : ""}`}
         >
-          {buttonText}
+          {isProcessing ? "Please wait..." : buttonText}
         </button>
 
         <div className="grid grid-cols-2 gap-3">
@@ -331,13 +336,6 @@ export default function WorkTrack() {
               <p>{todayData ? formatTime(todayData.checkOut) : "--:--"}</p>
               <span className="text-xs text-white/40">Check Out</span>
             </div>
-
-            {/* <div>
-              <p>
-                {todayData?.totalHours ? `${todayData.totalHours}h` : "0:00"}
-              </p>
-              <span className="text-xs text-white/40">Hours</span>
-            </div> */}
           </div>
         </div>
       </div>
