@@ -135,7 +135,7 @@ Your Service Worker IS working! Check DevTools:
 
 ## 💡 Best Practice Implementation
 
-For YOUR Work-Track app, recommended flow:
+For YOUR Work Track app, recommended flow:
 
 ```
 User visits → Service Worker activates → 

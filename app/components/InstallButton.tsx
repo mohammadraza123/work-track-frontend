@@ -83,7 +83,7 @@ export function InstallButton() {
       onClick={handleInstall}
       disabled={isLoading}
       className="fixed bottom-6 right-6 bg-white text-[#292c43] px-6 py-3 rounded-full font-semibold shadow-lg hover:shadow-xl transition-all z-50 disabled:opacity-50"
-      aria-label="Install Work-Track app"
+      aria-label="Install Work Track app"
     >
       {isLoading ? 'Installing...' : '⬇️ Install App'}
     </button>

@@ -19,14 +19,14 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Work-Track - Client Management",
+  title: "Work Track - Client Management",
   description:
     "Work-Track helps clients manage projects, track work progress, and stay organized anywhere. Fully works offline.",
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
-    title: "Work-Track",
+    title: "Work Track",
   },
   icons: {
     icon: [
@@ -49,8 +49,8 @@ export const metadata: Metadata = {
     "client management",
     "offline app",
   ],
-  authors: [{ name: "Work-Track Team" }],
-  applicationName: "Work-Track",
+  authors: [{ name: "Work Track Team" }],
+  applicationName: "Work Track",
 };
 
 export const viewport: Viewport = {
@@ -79,7 +79,7 @@ export default function RootLayout({
           name="apple-mobile-web-app-status-bar-style"
           content="black-translucent"
         />
-        <meta name="apple-mobile-web-app-title" content="Work-Track" />
+        <meta name="apple-mobile-web-app-title" content="Work Track" />
 
         {/* Theme & Display */}
         <meta name="theme-color" content="#292c43" />
@@ -100,7 +100,7 @@ export default function RootLayout({
         <meta property="og:title" content="Work-Track - Client Management" />
         <meta
           property="og:description"
-          content="Work-Track helps clients manage projects, track work progress, and stay organized anywhere. Fully works offline."
+          content="Work Track helps clients manage projects, track work progress, and stay organized anywhere. Fully works offline."
         />
         <meta property="og:image" content="/icons/logo.png" />
 

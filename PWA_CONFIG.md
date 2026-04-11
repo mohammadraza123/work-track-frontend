@@ -1,5 +1,5 @@
 /**
- * PWA Configuration Guide for Work-Track
+ * PWA Configuration Guide for Work Track
  * 
  * The app has been configured as a full Progressive Web App with:
  * ✓ Service Worker for offline functionality
