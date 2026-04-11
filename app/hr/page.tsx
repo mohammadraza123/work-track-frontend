@@ -75,16 +75,23 @@ function HRLogin({ onLogin }: { onLogin: () => void }) {
         style={{ bottom: "5%", right: "-5%" }}
       />
 
-      <motion.div
-        className="w-full max-w-sm bg-[#292c43] border border-white/10 rounded-3xl p-8 relative overflow-hidden cursor-default"
-        style={{ rotateX: cardTilt.rotateX, rotateY: cardTilt.rotateY, transformStyle: "preserve-3d", perspective: 800 }}
-        onMouseMove={cardTilt.onMouseMove}
-        onMouseLeave={cardTilt.onMouseLeave}
-        initial={{ opacity: 0, scale: 0.85, y: 40, rotateX: -15 }}
-        animate={{ opacity: 1, scale: 1, y: 0, rotateX: 0 }}
-        transition={{ type: "spring", stiffness: 180, damping: 20 }}
-        {...(shake ? { animate: { x: [-8, 8, -6, 6, -4, 4, 0], rotateX: 0, scale: 1, y: 0, opacity: 1 }, transition: { duration: 0.5 } } : {})}
-      >
+     <motion.div
+  className="w-full max-w-sm bg-[#292c43] border border-white/10 rounded-3xl p-8 relative overflow-hidden cursor-default"
+  style={{ rotateX: cardTilt.rotateX, rotateY: cardTilt.rotateY, transformStyle: "preserve-3d", perspective: 800 }}
+  onMouseMove={cardTilt.onMouseMove}
+  onMouseLeave={cardTilt.onMouseLeave}
+  initial={{ opacity: 0, scale: 0.85, y: 40, rotateX: -15 }}
+  animate={
+    shake
+      ? { x: [-8, 8, -6, 6, -4, 4, 0], opacity: 1, scale: 1, y: 0, rotateX: 0 }
+      : { opacity: 1, scale: 1, y: 0, rotateX: 0, x: 0 }
+  }
+  transition={
+    shake
+      ? { duration: 0.5 }
+      : { type: "spring", stiffness: 180, damping: 20 }
+  }
+>
         {/* Shine layer */}
         <div className="absolute inset-0 rounded-3xl pointer-events-none"
           style={{ background: "linear-gradient(135deg, rgba(255,255,255,0.06) 0%, transparent 60%)" }} />
