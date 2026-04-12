@@ -19,7 +19,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Work Track - Client Management",
+  title: "Work Track",
   description:
     "Work-Track helps clients manage projects, track work progress, and stay organized anywhere. Fully works offline.",
   manifest: "/manifest.json",
@@ -97,7 +97,7 @@ export default function RootLayout({
         {/* Additional PWA Meta Tags */}
         <link rel="canonical" href="https://work-track.app" />
         <meta property="og:type" content="website" />
-        <meta property="og:title" content="Work-Track - Client Management" />
+        <meta property="og:title" content="Work-Track" />
         <meta
           property="og:description"
           content="Work Track helps clients manage projects, track work progress, and stay organized anywhere. Fully works offline."

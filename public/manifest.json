@@ -1,5 +1,5 @@
 {
-  "name": "Work Track - Client Management App",
+  "name": "Work Track",
   "short_name": "Work Track",
   "description": "Work Track helps clients manage projects, track work progress, and stay organized anywhere. Fully functional offline.",
   "start_url": "/",
@@ -10,7 +10,7 @@
   "lang": "en",
   "scope": "/",
   "prefer_related_applications": false,
-  
+
   "screenshots": [
     {
       "src": "/icons/logo.png",
@@ -54,7 +54,7 @@
     }
   ],
   "categories": ["productivity", "business"],
- "permissions": ["geolocation"],
+  "permissions": ["geolocation"],
 
   "icons": [
     {
