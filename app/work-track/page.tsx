@@ -34,19 +34,30 @@ function useClock() {
 function use3DTilt(strength = 15) {
   const x = useMotionValue(0);
   const y = useMotionValue(0);
-  const rotateX = useSpring(useTransform(y, [-0.5, 0.5], [strength, -strength]), {
-    stiffness: 300, damping: 30,
-  });
-  const rotateY = useSpring(useTransform(x, [-0.5, 0.5], [-strength, strength]), {
-    stiffness: 300, damping: 30,
-  });
+  const rotateX = useSpring(
+    useTransform(y, [-0.5, 0.5], [strength, -strength]),
+    {
+      stiffness: 300,
+      damping: 30,
+    },
+  );
+  const rotateY = useSpring(
+    useTransform(x, [-0.5, 0.5], [-strength, strength]),
+    {
+      stiffness: 300,
+      damping: 30,
+    },
+  );
 
   const onMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     const rect = e.currentTarget.getBoundingClientRect();
     x.set((e.clientX - rect.left) / rect.width - 0.5);
     y.set((e.clientY - rect.top) / rect.height - 0.5);
   };
-  const onMouseLeave = () => { x.set(0); y.set(0); };
+  const onMouseLeave = () => {
+    x.set(0);
+    y.set(0);
+  };
 
   return { rotateX, rotateY, onMouseMove, onMouseLeave };
 }
@@ -93,7 +104,9 @@ export default function WorkTrack() {
       if (data?.checkIn) {
         const d = new Date(data.checkIn);
         const timeStr = `${d.getHours().toString().padStart(2, "0")}:${d
-          .getMinutes().toString().padStart(2, "0")}:${d.getSeconds().toString().padStart(2, "0")}`;
+          .getMinutes()
+          .toString()
+          .padStart(2, "0")}:${d.getSeconds().toString().padStart(2, "0")}`;
         setCheckInTime(timeStr);
         setCheckedIn(!data.checkOut);
         setIsCompleted(!!data.checkOut);
@@ -115,7 +128,9 @@ export default function WorkTrack() {
         if (data?.checkIn) {
           const d = new Date(data.checkIn);
           const timeStr = `${d.getHours().toString().padStart(2, "0")}:${d
-            .getMinutes().toString().padStart(2, "0")}:${d.getSeconds().toString().padStart(2, "0")}`;
+            .getMinutes()
+            .toString()
+            .padStart(2, "0")}:${d.getSeconds().toString().padStart(2, "0")}`;
           setCheckInTime(timeStr);
           setCheckedIn(!data.checkOut);
           if (!data.checkOut) startTracking();
@@ -131,7 +146,8 @@ export default function WorkTrack() {
   }, [dispatch]);
 
   useEffect(() => {
-    if (todayData) localStorage.setItem("attendance", JSON.stringify(todayData));
+    if (todayData)
+      localStorage.setItem("attendance", JSON.stringify(todayData));
   }, [todayData]);
 
   useEffect(() => {
@@ -141,8 +157,12 @@ export default function WorkTrack() {
       const start = new Date();
       start.setHours(h, m, s, 0);
       const diff = Math.floor((Date.now() - start.getTime()) / 1000);
-      const eh = Math.floor(diff / 3600).toString().padStart(2, "0");
-      const em = Math.floor((diff % 3600) / 60).toString().padStart(2, "0");
+      const eh = Math.floor(diff / 3600)
+        .toString()
+        .padStart(2, "0");
+      const em = Math.floor((diff % 3600) / 60)
+        .toString()
+        .padStart(2, "0");
       const es = (diff % 60).toString().padStart(2, "0");
       setElapsed(`${eh}:${em}:${es}`);
     }, 1000);
@@ -168,7 +188,9 @@ export default function WorkTrack() {
   const formatTime = (date: string) => {
     if (!date) return "--:--";
     return new Date(date).toLocaleTimeString("en-GB", {
-      hour: "2-digit", minute: "2-digit", hour12: false,
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false,
     });
   };
 
@@ -180,7 +202,9 @@ export default function WorkTrack() {
       setCheckedIn(true);
       const d = new Date(res.checkIn);
       const timeStr = `${d.getHours().toString().padStart(2, "0")}:${d
-        .getMinutes().toString().padStart(2, "0")}:${d.getSeconds().toString().padStart(2, "0")}`;
+        .getMinutes()
+        .toString()
+        .padStart(2, "0")}:${d.getSeconds().toString().padStart(2, "0")}`;
       setCheckInTime(timeStr);
       setTodayData(res);
       startTracking();
@@ -204,21 +228,22 @@ export default function WorkTrack() {
     }
   };
 
-const router = useRouter();
+  const router = useRouter();
 
-const handleLogout = () => {
-  localStorage.clear();
-  Cookies.remove("token"); 
-  router.push("/");
-};
+  const handleLogout = () => {
+    localStorage.clear();
+    Cookies.remove("token");
+    router.push("/");
+  };
 
   const buttonText = isCompleted
     ? "Completed Today"
-    : checkedIn ? "Check Out" : "Check In";
+    : checkedIn
+      ? "Check Out"
+      : "Check In";
 
   return (
     <div className="min-h-screen bg-[#1e2035] flex flex-col relative overflow-hidden">
-
       <div
         className="fixed inset-0 pointer-events-none z-0"
         style={{
@@ -228,49 +253,76 @@ const handleLogout = () => {
         }}
       />
 
-<motion.button
-  onClick={handleLogout}
-  className="w-full py-3 rounded-xl border border-white/10 text-white/50 text-sm font-medium relative overflow-hidden"
-  initial={{ opacity: 0, y: 20 }}
-  animate={{ opacity: 1, y: 0 }}
-  transition={{ type: "spring", stiffness: 200, damping: 22, delay: 0.55 }}
-  whileHover={{
-    scale: 1.02,
-    rotateX: 3,
-    borderColor: "rgba(255,255,255,0.25)",
-    color: "rgba(255,255,255,0.9)",
-    boxShadow: "0 8px 28px rgba(0,0,0,0.3)",
-  }}
-  whileTap={{ scale: 0.97, rotateX: -1 }}
-  style={{ transformStyle: "preserve-3d", perspective: 500 }}
->
-  <motion.span
-    className="absolute inset-0 rounded-xl pointer-events-none"
-    style={{
-      background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.04), transparent)",
-      backgroundSize: "200% 100%",
-    }}
-    animate={{ backgroundPosition: ["200% 0", "-200% 0"] }}
-    transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
-  />
-  <span className="flex items-center justify-center gap-2">
-    <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
-      <path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h6a2 2 0 012 2v1" />
-    </svg>
-    Log Out
-  </span>
-</motion.button>
+      <motion.button
+        onClick={handleLogout}
+        className="w-full py-3 bg-white border border-black/10 text-black text-sm font-medium relative overflow-hidden"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{
+          type: "spring",
+          stiffness: 200,
+          damping: 22,
+          delay: 0.55,
+        }}
+        whileHover={{
+          scale: 1.02,
+          rotateX: 3,
+          borderColor: "rgba(0,0,0,0.25)",
+          color: "rgba(0,0,0,0.9)",
+          boxShadow: "0 8px 28px rgba(0,0,0,0.3)",
+        }}
+        whileTap={{ scale: 0.97, rotateX: -1 }}
+        style={{ transformStyle: "preserve-3d", perspective: 500 }}
+      >
+        {/* background layer */}
+        <motion.span
+          className="absolute inset-0 rounded-xl pointer-events-none z-0"
+          style={{
+            background: "white",
+            backgroundSize: "200% 100%",
+          }}
+          animate={{ backgroundPosition: ["200% 0", "-200% 0"] }}
+          transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
+        />
+
+        {/* content layer */}
+        <span className="relative z-10 flex items-center justify-center gap-2 text-black">
+          <svg
+            className="w-4 h-4"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth={1.8}
+            viewBox="0 0 24 24"
+          >
+            <path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h6a2 2 0 012 2v1" />
+          </svg>
+          Log Out
+        </span>
+      </motion.button>
 
       <motion.div
         className="fixed w-72 h-72 rounded-full bg-indigo-500/10 blur-3xl pointer-events-none"
-        animate={{ x: [0, 60, -30, 0], y: [0, -50, 70, 0], scale: [1, 1.2, 0.9, 1] }}
+        animate={{
+          x: [0, 60, -30, 0],
+          y: [0, -50, 70, 0],
+          scale: [1, 1.2, 0.9, 1],
+        }}
         transition={{ duration: 14, repeat: Infinity, ease: "easeInOut" }}
         style={{ top: "-5%", left: "-5%", zIndex: 0 }}
       />
       <motion.div
         className="fixed w-56 h-56 rounded-full bg-purple-500/10 blur-3xl pointer-events-none"
-        animate={{ x: [0, -50, 40, 0], y: [0, 60, -40, 0], scale: [1, 0.85, 1.15, 1] }}
-        transition={{ duration: 18, repeat: Infinity, ease: "easeInOut", delay: 4 }}
+        animate={{
+          x: [0, -50, 40, 0],
+          y: [0, 60, -40, 0],
+          scale: [1, 0.85, 1.15, 1],
+        }}
+        transition={{
+          duration: 18,
+          repeat: Infinity,
+          ease: "easeInOut",
+          delay: 4,
+        }}
         style={{ bottom: "5%", right: "-5%", zIndex: 0 }}
       />
 
@@ -310,7 +362,6 @@ const handleLogout = () => {
 
       {/* Main content */}
       <div className="relative z-10 flex-1 flex flex-col max-w-sm mx-auto w-full px-5 pt-12 pb-8 gap-5">
-
         {/* CLOCK CARD — 3D tilt */}
         <motion.div
           className="bg-[#292c43] rounded-3xl p-7 text-center cursor-default"
@@ -324,7 +375,12 @@ const handleLogout = () => {
           onMouseLeave={clockTilt.onMouseLeave}
           initial={{ opacity: 0, y: 40, rotateX: -20 }}
           animate={{ opacity: 1, y: 0, rotateX: 0 }}
-          transition={{ type: "spring", stiffness: 180, damping: 20, delay: 0.1 }}
+          transition={{
+            type: "spring",
+            stiffness: 180,
+            damping: 20,
+            delay: 0.1,
+          }}
           whileHover={{ scale: 1.01 }}
         >
           {/* Inner 3D shine layer */}
@@ -407,19 +463,32 @@ const handleLogout = () => {
           } ${isProcessing ? "opacity-70 cursor-not-allowed" : ""}`}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ type: "spring", stiffness: 200, damping: 22, delay: 0.2 }}
-          whileHover={!isCompleted && !isProcessing ? {
-            scale: 1.03,
-            rotateX: 4,
-            boxShadow: checkedIn
-              ? "0 10px 40px rgba(248,113,113,0.4)"
-              : "0 10px 40px rgba(255,255,255,0.25)",
-            transition: { type: "spring", stiffness: 400, damping: 20 },
-          } : {}}
-          whileTap={!isCompleted && !isProcessing ? {
-            scale: 0.97,
-            rotateX: -2,
-          } : {}}
+          transition={{
+            type: "spring",
+            stiffness: 200,
+            damping: 22,
+            delay: 0.2,
+          }}
+          whileHover={
+            !isCompleted && !isProcessing
+              ? {
+                  scale: 1.03,
+                  rotateX: 4,
+                  boxShadow: checkedIn
+                    ? "0 10px 40px rgba(248,113,113,0.4)"
+                    : "0 10px 40px rgba(255,255,255,0.25)",
+                  transition: { type: "spring", stiffness: 400, damping: 20 },
+                }
+              : {}
+          }
+          whileTap={
+            !isCompleted && !isProcessing
+              ? {
+                  scale: 0.97,
+                  rotateX: -2,
+                }
+              : {}
+          }
           style={{ transformStyle: "preserve-3d", perspective: 600 }}
         >
           {/* Ripple shimmer on button */}
@@ -458,7 +527,13 @@ const handleLogout = () => {
               sub: "Apply & track",
               delay: 0.3,
               icon: (
-                <svg className="w-5 h-5 text-white/60" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
+                <svg
+                  className="w-5 h-5 text-white/60"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth={1.8}
+                  viewBox="0 0 24 24"
+                >
                   <rect x="3" y="4" width="18" height="18" rx="2" />
                   <path d="M16 2v4M8 2v4M3 10h18M8 14h.01M12 14h.01M8 18h.01M12 18h.01" />
                 </svg>
@@ -470,7 +545,13 @@ const handleLogout = () => {
               sub: "Manage leaves",
               delay: 0.38,
               icon: (
-                <svg className="w-5 h-5 text-white/60" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
+                <svg
+                  className="w-5 h-5 text-white/60"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth={1.8}
+                  viewBox="0 0 24 24"
+                >
                   <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" />
                   <circle cx="9" cy="7" r="4" />
                   <path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" />
@@ -482,7 +563,12 @@ const handleLogout = () => {
               key={href}
               initial={{ opacity: 0, y: 24, rotateY: -15 }}
               animate={{ opacity: 1, y: 0, rotateY: 0 }}
-              transition={{ type: "spring", stiffness: 200, damping: 22, delay }}
+              transition={{
+                type: "spring",
+                stiffness: 200,
+                damping: 22,
+                delay,
+              }}
               whileHover={{
                 rotateY: 6,
                 rotateX: -4,
@@ -511,10 +597,16 @@ const handleLogout = () => {
                 >
                   {icon}
                 </div>
-                <p className="text-white font-semibold text-sm" style={{ transform: "translateZ(6px)" }}>
+                <p
+                  className="text-white font-semibold text-sm"
+                  style={{ transform: "translateZ(6px)" }}
+                >
                   {label}
                 </p>
-                <p className="text-white/35 text-xs mt-0.5" style={{ transform: "translateZ(4px)" }}>
+                <p
+                  className="text-white/35 text-xs mt-0.5"
+                  style={{ transform: "translateZ(4px)" }}
+                >
                   {sub}
                 </p>
               </Link>
@@ -535,7 +627,12 @@ const handleLogout = () => {
           onMouseLeave={summaryTilt.onMouseLeave}
           initial={{ opacity: 0, y: 30, rotateX: 15 }}
           animate={{ opacity: 1, y: 0, rotateX: 0 }}
-          transition={{ type: "spring", stiffness: 180, damping: 20, delay: 0.45 }}
+          transition={{
+            type: "spring",
+            stiffness: 180,
+            damping: 20,
+            delay: 0.45,
+          }}
           whileHover={{ scale: 1.02 }}
         >
           {/* Shine overlay */}
@@ -548,11 +645,17 @@ const handleLogout = () => {
             }}
           />
 
-          <p className="text-white/40 text-xs mb-3" style={{ transform: "translateZ(8px)" }}>
+          <p
+            className="text-white/40 text-xs mb-3"
+            style={{ transform: "translateZ(8px)" }}
+          >
             Today's Summary
           </p>
 
-          <div className="flex justify-between text-sm" style={{ transform: "translateZ(12px)" }}>
+          <div
+            className="flex justify-between text-sm"
+            style={{ transform: "translateZ(12px)" }}
+          >
             <div>
               <AnimatePresence mode="wait">
                 <motion.p
