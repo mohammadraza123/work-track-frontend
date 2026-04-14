@@ -9,6 +9,7 @@ import { AppDispatch } from "@/redux/rootReducer";
 import { signIn } from "@/redux/apiSlice";
 import Button from "../Button";
 import { useRouter } from "next/navigation";
+import Cookies from "js-cookie";
 
 interface LoginFormValues {
   email: string;
@@ -28,17 +29,45 @@ const LoginForm = () => {
     resolver: yupResolver(loginSchema),
   });
 
+  // const onSubmit = async (data: LoginFormValues) => {
+  //   try {
+  //     const payload = {
+  //       email: data.email,
+  //       password: data.password,
+  //     };
+  //     const response = await dispatch(signIn(payload)).unwrap();
+  //     router.push("/work-track");
+  //     reset();
+  //   } catch (err: any) {
+  //     console.error("Signup failed:", err);
+  //   }
+  // };
+
+  const HR_EMAIL = "hr@company.com";
+  const HR_PASSWORD = "hr1234";
+
   const onSubmit = async (data: LoginFormValues) => {
     try {
+      // ✅ Check HR login first
+      if (data.email === HR_EMAIL && data.password === HR_PASSWORD) {
+        console.log("condition perv");
+        Cookies.set("isHR", "true", { path: "/" }); // ✅ FIXED
+        router.push("/hr"); // 👉 your HR page route
+        reset();
+        return;
+      }
+
+      // ✅ Normal user login
       const payload = {
         email: data.email,
         password: data.password,
       };
+
       const response = await dispatch(signIn(payload)).unwrap();
       router.push("/work-track");
       reset();
     } catch (err: any) {
-      console.error("Signup failed:", err);
+      console.error("Login failed:", err);
     }
   };
 

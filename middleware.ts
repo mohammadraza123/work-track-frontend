@@ -3,25 +3,34 @@ import type { NextRequest } from "next/server";
 
 export function middleware(request: NextRequest) {
   const token = request.cookies.get("token")?.value;
+  const isHR = request.cookies.get("isHR")?.value;
 
   const { pathname } = request.nextUrl;
 
-  // login page only "/"
   const isAuthPage = pathname === "/";
 
-  // protected routes
-  const isProtectedRoute =
-    pathname.startsWith("/work-track") ||
-    pathname.startsWith("/hr");
+  const isHRPage = pathname.startsWith("/hr");
+  const isWorkTrackPage =
+    pathname.startsWith("/work-track") || pathname.startsWith("/leave");
 
-  // If not logged in → redirect to login
-  if (!token && isProtectedRoute) {
+  // 🔴 Protect HR routes → only HR allowed
+  if (isHRPage && !isHR) {
     return NextResponse.redirect(new URL("/", request.url));
   }
 
-  // If logged in → prevent going to login page
-  if (token && isAuthPage) {
-    return NextResponse.redirect(new URL("/work-track", request.url));
+  // 🔴 Protect WorkTrack routes → only logged-in users
+  if (isWorkTrackPage && !token) {
+    return NextResponse.redirect(new URL("/", request.url));
+  }
+
+  // 🟢 Handle login page redirect
+  if (isAuthPage) {
+    if (isHR) {
+      return NextResponse.redirect(new URL("/hr", request.url));
+    }
+    if (token) {
+      return NextResponse.redirect(new URL("/work-track", request.url));
+    }
   }
 
   return NextResponse.next();
