@@ -19,7 +19,7 @@ const AuthPage = () => {
 
         {/* Floating orb 1 */}
         <motion.div
-          className="absolute w-[500px] h-[500px] rounded-full bg-purple-600/10 blur-3xl pointer-events-none"
+          className="absolute w-[500px] h-[500px] rounded-full  blur-3xl pointer-events-none"
           animate={{
             x: [0, 80, -40, 0],
             y: [0, -60, 80, 0],
@@ -31,7 +31,7 @@ const AuthPage = () => {
 
         {/* Floating orb 2 */}
         <motion.div
-          className="absolute w-[400px] h-[400px] rounded-full bg-indigo-500/10 blur-3xl pointer-events-none"
+          className="absolute w-[400px] h-[400px] rounded-full blur-3xl pointer-events-none"
           animate={{
             x: [0, -60, 50, 0],
             y: [0, 70, -50, 0],
@@ -43,7 +43,7 @@ const AuthPage = () => {
 
         {/* Floating orb 3 */}
         <motion.div
-          className="absolute w-[300px] h-[300px] rounded-full bg-pink-500/10 blur-3xl pointer-events-none"
+          className="absolute w-[300px] h-[300px] rounded-full blur-3xl pointer-events-none"
           animate={{
             x: [0, 40, -80, 0],
             y: [0, -80, 40, 0],

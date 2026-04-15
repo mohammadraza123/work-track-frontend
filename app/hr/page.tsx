@@ -539,13 +539,13 @@ function HRDashboard({ onLogout }: { onLogout: () => void }) {
         >
           <div className="mb-6">
             <div className="mb-4">
-              <BackButton label="Home" href="/" />
+              {/* <BackButton label="Home" href="/" /> */}
             </div>
             <motion.h1
               className="text-2xl font-bold text-white"
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.1 }}
+              transition={{ delay: 0.1 }}bg
             >
               HR Dashboard
             </motion.h1>
