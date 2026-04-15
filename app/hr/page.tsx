@@ -349,7 +349,7 @@ function LeaveCard({
 
         <div className="flex gap-2" style={{ transform: "translateZ(12px)" }}>
           <motion.button
-            disabled={updating === leave._id || leave.status === "approved"}
+            disabled={updating === leave._id || leave.status !== "pending"}
             onClick={onApprove}
             className="flex-1 py-2 rounded-xl bg-emerald-400/10 border border-emerald-400/20 text-emerald-400 text-sm font-semibold hover:bg-emerald-400/20 disabled:opacity-40 disabled:cursor-not-allowed transition relative overflow-hidden"
             whileHover={{
@@ -374,7 +374,7 @@ function LeaveCard({
           </motion.button>
 
           <motion.button
-            disabled={updating === leave._id || leave.status === "rejected"}
+            disabled={updating === leave._id || leave.status !== "pending"}
             onClick={onReject}
             className="flex-1 py-2 rounded-xl bg-red-400/10 border border-red-400/20 text-red-400 text-sm font-semibold hover:bg-red-400/20 disabled:opacity-40 disabled:cursor-not-allowed transition relative overflow-hidden"
             whileHover={{
@@ -405,7 +405,7 @@ function LeaveCard({
 
 // ─── HR Dashboard ─────────────────────────────────────────────────────────────
 function HRDashboard({ onLogout }: { onLogout: () => void }) {
-  const router  = useRouter()
+  const router = useRouter();
   const [leaves, setLeaves] = useState<Leave[]>([]);
   const [loading, setLoading] = useState(false);
   const [updating, setUpdating] = useState<string | null>(null);
@@ -448,8 +448,18 @@ function HRDashboard({ onLogout }: { onLogout: () => void }) {
     rejected: leaves.filter((l) => l.status === "rejected").length,
   };
 
+  // Sort by newest first (recent requests on top)
+  const sortedLeaves = [...leaves].sort((a, b) => {
+    return (
+      new Date(b.createdAt || b.startDate).getTime() -
+      new Date(a.createdAt || a.startDate).getTime()
+    );
+  });
+
   const filtered =
-    filter === "all" ? leaves : leaves.filter((l) => l.status === filter);
+    filter === "all"
+      ? sortedLeaves
+      : sortedLeaves.filter((l) => l.status === filter);
 
   const statConfig = [
     {
@@ -478,11 +488,11 @@ function HRDashboard({ onLogout }: { onLogout: () => void }) {
     },
   ] as const;
 
-    const handleLogout = () => {
-      localStorage.clear();
-      Cookies.remove("isHR");
-      router.push("/");
-    };
+  const handleLogout = () => {
+    localStorage.clear();
+    Cookies.remove("isHR");
+    router.push("/");
+  };
 
   return (
     <div className="min-h-screen bg-[#1e2035] relative overflow-hidden">

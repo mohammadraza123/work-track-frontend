@@ -408,18 +408,9 @@ export default function WorkTrack() {
             >
               {hours}:{minutes}
             </motion.span>
-            <AnimatePresence mode="wait">
-              <motion.span
-                key={seconds}
-                className="text-2xl text-white/40 ml-1"
-                initial={{ opacity: 0, y: -6 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 6 }}
-                transition={{ duration: 0.2 }}
-              >
-                :{seconds}
-              </motion.span>
-            </AnimatePresence>
+            <p key={seconds} className="text-2xl text-white/40 ml-1">
+              :{seconds}
+            </p>
           </div>
 
           <div className="mt-4" style={{ transform: "translateZ(12px)" }}>
