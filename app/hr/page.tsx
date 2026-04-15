@@ -545,7 +545,7 @@ function HRDashboard({ onLogout }: { onLogout: () => void }) {
               className="text-2xl font-bold text-white"
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.1 }}bg
+              transition={{ delay: 0.1 }}
             >
               HR Dashboard
             </motion.h1>

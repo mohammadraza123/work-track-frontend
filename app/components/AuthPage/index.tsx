@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef } from "react";
-import { motion, AnimatePresence, useMotionValue, useSpring } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import LoginForm from "../Login";
 import SignupForm from "../Signup";
 import { LocationPermissionModal } from "../LocationPermissionModal";
