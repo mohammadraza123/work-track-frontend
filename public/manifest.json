@@ -5,7 +5,7 @@
   "start_url": "/",
   "display": "standalone",
   "orientation": "portrait-primary",
-"background_color": "#292c43",
+  "background_color": "#292c43",
   "theme_color": "#292c43",
   "lang": "en",
   "scope": "/",
@@ -13,13 +13,13 @@
 
   "screenshots": [
     {
-      "src": "/icons/logo2.png",
+      "src": "/icons/logo.png",
       "sizes": "192x192",
       "type": "image/png",
       "form_factor": "narrow"
     },
     {
-      "src": "/icons/logo2.png",
+      "src": "/icons/logo.png",
       "sizes": "512x512",
       "type": "image/png",
       "form_factor": "wide"
@@ -55,7 +55,8 @@
   ],
   "categories": ["productivity", "business"],
   "permissions": ["geolocation"],
-  "icons": [
+
+ "icons": [
     {
       "src": "/icons/logo2-72x72.png",
       "sizes": "72x72",
@@ -100,3 +101,5 @@
 }
   ]
 }
+
+
