@@ -9,10 +9,7 @@ import { LocationPermissionModal } from "../LocationPermissionModal";
 const AuthPage = () => {
   const [mode, setMode] = useState<"login" | "signup">("login");
   const constraintsRef = useRef(null);
-useEffect (() => {
-  // Replace history so this page becomes first entry
-  window.history.replaceState(null, "", window.location.href);
-}, []);
+
   return (
     <>
       <LocationPermissionModal />
