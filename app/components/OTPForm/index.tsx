@@ -63,7 +63,7 @@ export default function OTPForm() {
       if (type === "forgot") {
         router.push(`/reset-password?email=${email}&otp=${data?.otp}`);
       } else {
-        router.push("/work-track");
+        router.replace("/work-track");
       }
     } catch (err) {
       console.error("OTP verification failed:", err);

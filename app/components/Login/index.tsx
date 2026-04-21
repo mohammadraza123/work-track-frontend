@@ -64,7 +64,7 @@ const LoginForm = () => {
       };
 
       const response = await dispatch(signIn(payload)).unwrap();
-      router.push("/work-track");
+      router.replace("/work-track");
       reset();
     } catch (err: any) {
       console.error("Login failed:", err);

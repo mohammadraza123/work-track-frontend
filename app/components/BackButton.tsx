@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
+import { ChevronLeft } from "lucide-react";
 
 interface BackButtonProps {
   label?: string;
@@ -27,9 +28,7 @@ export default function BackButton({ label = "Back", href, className = "" }: Bac
         whileHover={{ rotateY: -20, scale: 1.08 }}
         style={{ transformStyle: "preserve-3d", perspective: 300 }}
       >
-        <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-          <path d="M15 18l-6-6 6-6" />
-        </svg>
+       <ChevronLeft color="white"/>
       </motion.span>
       <span className="font-medium">{label}</span>
     </motion.button>
