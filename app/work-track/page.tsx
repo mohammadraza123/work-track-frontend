@@ -23,11 +23,21 @@ import { useRouter } from "next/navigation";
 
 function useClock() {
   const [time, setTime] = useState(new Date());
+
   useEffect(() => {
-    const t = setInterval(() => setTime(new Date()), 1000);
+    const t = setInterval(() => {
+      setTime(new Date());
+    }, 1000);
+
     return () => clearInterval(t);
   }, []);
-  return time;
+
+  // Convert current time to New York timezone
+  return new Date(
+    time.toLocaleString("en-US", {
+      timeZone: "America/New_York",
+    }),
+  );
 }
 
 /** 3D tilt hook — attach to any card */
